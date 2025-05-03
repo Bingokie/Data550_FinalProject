@@ -1,23 +1,25 @@
-#! add a rule to build the report
+# Final output
+all: FinalProject2.html
 
-Final_Project.html: Final_Project.Rmd Output/table_1.rds Output/graph1.png Code/Render_Final_Report.R
-	Rscript Code/Render_Final_Report.R
+# Final report
+FinalProject2.html: FinalProject2.Rmd
+	Rscript -e "rmarkdown::render('FinalProject2.Rmd', output_file = 'FinalProject2.html')"
 
+# Clean outputs
+clean:
+	rm -f FinalProject2/*.html
+
+
+# Run docker container to generate report
+.PHONY: report
+report: 
+	docker run --rm -v "$(PWD)/report:/project" data550
+	
+# Build image
+docker_build:
+	docker build -t data550 .
+	
+# Install dependencies
 .PHONY: install
 install:
 	Rscript -e "renv::restore(prompt = FALSE)"
-
-
-#! add a rule to create the output of table1
-Output/table_1.rds: Code/table1.R
-	Rscript Code/table1.R
-
-#! add a rule to create the output of graph1
-Output/graph1.png: Code/graph1.R
-	Rscript Code/graph1.R
-
-#! add a PHONY target for removing files from output
-.PHONY:clean
-clean:
-	rm Output/*
-	
